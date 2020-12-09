@@ -1,8 +1,8 @@
+use std::error::Error;
 use std::path::Path;
 
 use lazy_static::lazy_static;
 use regex::Regex;
-use serde;
 use serde_derive::Deserialize;
 
 use crate::utils::load_file;
@@ -47,21 +47,21 @@ pub struct GPIOPin {
 }
 
 #[derive(Debug, Deserialize)]
-#[serde(rename="IP")]
+#[serde(rename = "IP")]
 pub struct IpGPIO {
     #[serde(rename = "GPIO_Pin")]
     pub(crate) gpio_pin: Vec<GPIOPin>,
 }
 
 impl IpGPIO {
-    pub fn load<P: AsRef<Path>>(db_dir: P, version: &str) -> Result<Self, Box<std::error::Error>> {
+    pub fn load<P: AsRef<Path>>(db_dir: P, version: &str) -> Result<Self, Box<dyn Error>> {
         load_file(db_dir, format!("IP/GPIO-{}_Modes.xml", version))
     }
 }
 
 lazy_static! {
-    static ref USART_RX: Regex = Regex::new("USART._RX").unwrap();
-    static ref USART_TX: Regex = Regex::new("USART._TX").unwrap();
+    static ref USART_RX: Regex = Regex::new("(LP)?US?ART._RX").unwrap();
+    static ref USART_TX: Regex = Regex::new("(LP)?US?ART._TX").unwrap();
     static ref SPI_MOSI: Regex = Regex::new("SPI._MOSI").unwrap();
     static ref SPI_MISO: Regex = Regex::new("SPI._MISO").unwrap();
     static ref SPI_SCK: Regex = Regex::new("SPI._SCK").unwrap();
